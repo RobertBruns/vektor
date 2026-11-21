@@ -1,6 +1,6 @@
 # Deployment
 
-Live at **https://vektor.dpsg-marcelcallo.de** (Uberspace `marcel@sculptor.uberspace.de`), behind its own Basic Auth login (single user `Pfadi`). Same setup as the LASER repo.
+Live at **https://vektor.dpsg-marcelcallo.de** (Uberspace `marcel@sculptor.uberspace.de`), behind its own Basic Auth login (single user `marcel`). Same setup as the LASER repo.
 
 Every push to `main` deploys automatically:
 

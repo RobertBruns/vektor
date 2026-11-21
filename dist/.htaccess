@@ -1,4 +1,4 @@
-# Own login (single user Pfadi, file /var/www/virtual/marcel/.htpasswd-vektor)
+# Own login (single user marcel, file /var/www/virtual/marcel/.htpasswd-vektor)
 AuthType Basic
 AuthName "vektor"
 AuthUserFile /var/www/virtual/marcel/.htpasswd-vektor
