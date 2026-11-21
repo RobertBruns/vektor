@@ -29,6 +29,7 @@ const context = {
   clearTimeout() {},
   Uint8Array,
   console,
+  fetch: () => Promise.resolve({ ok: false }),
 };
 vm.createContext(context);
 vm.runInContext(

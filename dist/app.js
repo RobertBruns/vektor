@@ -224,4 +224,8 @@ $("download").onclick = () => {
 };
 $("help").onclick = () => $("guide").showModal();
 $("closeGuide").onclick = () => $("guide").close();
+fetch("version.txt", { cache: "no-cache" })
+  .then((r) => (r.ok ? r.text() : ""))
+  .then((v) => v && ($("version").textContent = "· Stand " + v.trim()))
+  .catch(() => {});
 sample();

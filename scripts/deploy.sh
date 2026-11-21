@@ -8,4 +8,6 @@ cd "$(dirname "$0")/.."
 git fetch origin main
 git checkout -f -B main origin/main
 rsync -a --delete dist/ "$docroot"/
+# Shown in the footer so you can tell which version is live
+git log -1 --format="%cd · %h" --date=format:%d.%m.%Y > "$docroot"/version.txt
 echo "deployed $(git rev-parse --short HEAD) to $docroot"
