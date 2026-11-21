@@ -1,1 +1,129 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inktrace — Sketch to SVG</title><meta name="description" content="Turn your sketches into clean, scalable SVGs. Private, browser-based vector tracing."><link rel="stylesheet" href="style.css"></head><body><header><a class="brand" href="."><span class="logo">i<span>↗</span></span>inktrace<span class="tag">SKETCH TO SVG</span></a><button id="help" class="quiet">How it works <span>?</span></button></header><main><div class="intro"><div><div class="eyebrow">FROM PAPER TO POSSIBILITY</div><h1>Your sketch. <em>Limitless.</em></h1><p>Turn hand-drawn ideas into crisp, scalable vectors.</p></div><div class="privacy">♧ &nbsp; Made on your device.<br><span>Your images never leave your browser.</span></div></div><div class="workspace"><aside><div class="aside-title">Trace settings <button id="reset" class="text-btn">Reset</button></div><section><label class="section-label">SOURCE IMAGE</label><button id="upload" class="upload"><span>＋</span> Upload a sketch<small>JPG, PNG, WEBP · up to 20 MB</small></button><input id="file" type="file" accept="image/png,image/jpeg,image/webp" hidden><div class="or">or <button id="sample" class="text-btn">try the sample sketch</button></div></section><section><label class="section-label">MAKE IT YOURS</label><div class="control"><label for="threshold">Threshold <output id="thresholdValue">160</output></label><input id="threshold" type="range" min="20" max="240" value="160"><small>Lighter lines <span>Darker shapes</span></small></div><div class="control"><label for="smooth">Smoothing <output id="smoothValue">1.2</output></label><input id="smooth" type="range" min="0" max="4" step="0.2" value="1.2"><small>More detail <span>Softer edges</span></small></div><div class="control"><label for="speckle">Remove speckles <output id="speckleValue">8</output></label><input id="speckle" type="range" min="0" max="80" value="8"><small>Keep marks <span>Clean up</span></small></div><label class="switch-row">Invert image <input id="invert" type="checkbox"></label></section><section class="export-settings"><label class="section-label">SVG APPEARANCE</label><label class="color-row">Ink color <input id="ink" type="color" value="#263d35"></label><label class="switch-row">Transparent background <input id="transparent" type="checkbox" checked></label></section><div class="tip"><span>✧</span><p>A little tip<br><small>Use dark lines on light paper. Even lighting makes a cleaner trace.</small></p></div></aside><div class="editor"><div class="editor-toolbar"><div class="segmented"><button class="active" data-view="split">Side by side</button><button data-view="vector">Vector only</button></div><span class="live">✦ Live preview</span></div><div class="panels" id="panels"><div class="panel original"><div class="panel-label">Original <span id="filename">sample-botanicals.png</span></div><div class="art"><canvas id="source"></canvas></div><div class="panel-footer">THE STARTING POINT <span>Raster image</span></div></div><div class="panel result"><div class="panel-label">Vector <span class="pill">SVG</span></div><div class="art checker" id="vector"></div><div class="panel-footer">READY FOR ANY SIZE <span id="pathCount">Tracing…</span></div></div></div><div class="editor-bottom"><span id="status" role="status">Preparing your sketch…</span><span class="scale">∞ &nbsp; Infinitely scalable</span></div></div></div><div class="download-bar"><div><strong>A small sketch. A big next step.</strong><span>Ready for your designs, prints, and whatever comes next.</span></div><button id="download">↓ &nbsp; Download SVG</button></div><footer><span>Built for the ideas you make by hand.</span><span>NO UPLOADS. NO SIGN-UP. JUST CREATE.</span></footer></main><dialog id="guide"><button id="closeGuide" class="quiet">Close ×</button><h2>From sketch to SVG</h2><p>1. Upload a photo or scan, or use your phone’s photo picker.</p><p>2. Adjust threshold to capture your lines. Smooth edges and remove stray speckles.</p><p>3. Pick your ink color and download your SVG.</p><p>Best for single-color drawings, lettering, and silhouettes. Exported SVGs contain editable vector paths with no embedded image. Images are processed locally at up to 900 pixels on the longest side.</p></dialog><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Inktrace — Sketch to SVG</title>
+    <meta
+      name="description"
+      content="Turn your sketches into clean, scalable SVGs. Private, browser-based vector tracing."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="."
+        ><span class="logo">i<span>↗</span></span
+        >inktrace<span class="tag">SKETCH TO SVG</span></a
+      ><button id="help" class="quiet">How it works <span>?</span></button>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <div class="eyebrow">FROM PAPER TO POSSIBILITY</div>
+          <h1>Your sketch. <em>Limitless.</em></h1>
+          <p>Turn hand-drawn ideas into crisp, scalable vectors.</p>
+        </div>
+        <div class="privacy">
+          ♧ &nbsp; Made on your device.<br /><span>Your images never leave your browser.</span>
+        </div>
+      </div>
+      <div class="workspace">
+        <aside>
+          <div class="aside-title">Trace settings <button id="reset" class="text-btn">Reset</button></div>
+          <section>
+            <label class="section-label">SOURCE IMAGE</label
+            ><button id="upload" class="upload">
+              <span>＋</span> Upload a sketch<small>JPG, PNG, WEBP · up to 20 MB</small></button
+            ><input id="file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+            <div class="or">or <button id="sample" class="text-btn">try the sample sketch</button></div>
+          </section>
+          <section>
+            <label class="section-label">MAKE IT YOURS</label>
+            <div class="control">
+              <label for="threshold">Threshold <output id="thresholdValue">160</output></label
+              ><input id="threshold" type="range" min="20" max="240" value="160" /><small
+                >Lighter lines <span>Darker shapes</span></small
+              >
+            </div>
+            <div class="control">
+              <label for="smooth">Smoothing <output id="smoothValue">1.2</output></label
+              ><input id="smooth" type="range" min="0" max="4" step="0.2" value="1.2" /><small
+                >More detail <span>Softer edges</span></small
+              >
+            </div>
+            <div class="control">
+              <label for="speckle">Remove speckles <output id="speckleValue">8</output></label
+              ><input id="speckle" type="range" min="0" max="80" value="8" /><small
+                >Keep marks <span>Clean up</span></small
+              >
+            </div>
+            <label class="switch-row">Invert image <input id="invert" type="checkbox" /></label>
+          </section>
+          <section class="export-settings">
+            <label class="section-label">SVG APPEARANCE</label
+            ><label class="color-row">Ink color <input id="ink" type="color" value="#263d35" /></label
+            ><label class="switch-row"
+              >Transparent background <input id="transparent" type="checkbox" checked
+            /></label>
+          </section>
+          <div class="tip">
+            <span>✧</span>
+            <p>
+              A little tip<br /><small
+                >Use dark lines on light paper. Even lighting makes a cleaner trace.</small
+              >
+            </p>
+          </div>
+        </aside>
+        <div class="editor">
+          <div class="editor-toolbar">
+            <div class="segmented">
+              <button class="active" data-view="split">Side by side</button
+              ><button data-view="vector">Vector only</button>
+            </div>
+            <span class="live">✦ Live preview</span>
+          </div>
+          <div class="panels" id="panels">
+            <div class="panel original">
+              <div class="panel-label">Original <span id="filename">sample-botanicals.png</span></div>
+              <div class="art"><canvas id="source"></canvas></div>
+              <div class="panel-footer">THE STARTING POINT <span>Raster image</span></div>
+            </div>
+            <div class="panel result">
+              <div class="panel-label">Vector <span class="pill">SVG</span></div>
+              <div class="art checker" id="vector"></div>
+              <div class="panel-footer">READY FOR ANY SIZE <span id="pathCount">Tracing…</span></div>
+            </div>
+          </div>
+          <div class="editor-bottom">
+            <span id="status" role="status">Preparing your sketch…</span
+            ><span class="scale">∞ &nbsp; Infinitely scalable</span>
+          </div>
+        </div>
+      </div>
+      <div class="download-bar">
+        <div>
+          <strong>A small sketch. A big next step.</strong
+          ><span>Ready for your designs, prints, and whatever comes next.</span>
+        </div>
+        <button id="download">↓ &nbsp; Download SVG</button>
+      </div>
+      <footer>
+        <span>Built for the ideas you make by hand.</span><span>NO UPLOADS. NO SIGN-UP. JUST CREATE.</span>
+      </footer>
+    </main>
+    <dialog id="guide">
+      <button id="closeGuide" class="quiet">Close ×</button>
+      <h2>From sketch to SVG</h2>
+      <p>1. Upload a photo or scan, or use your phone’s photo picker.</p>
+      <p>2. Adjust threshold to capture your lines. Smooth edges and remove stray speckles.</p>
+      <p>3. Pick your ink color and download your SVG.</p>
+      <p>
+        Best for single-color drawings, lettering, and silhouettes. Exported SVGs contain editable vector
+        paths with no embedded image. Images are processed locally at up to 900 pixels on the longest side.
+      </p>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>
