@@ -30,6 +30,8 @@ const context = {
   Uint8Array,
   console,
   fetch: () => Promise.resolve({ ok: false }),
+  matchMedia: () => ({ matches: false }),
+  navigator: {},
 };
 vm.createContext(context);
 vm.runInContext(
@@ -57,4 +59,27 @@ test(
   Array.from({ length: 25 }, (_, i) => i === 0 || i === 24),
   2,
 );
-console.log("Passed solid shape, hole, blank, disconnected shapes and SVG export checks.");
+// Photo-like case: paper with a shadow over the right half, one pen line on each side.
+// Without flattening the shadow itself becomes ink; with flattening only the lines remain.
+function maxX(flat) {
+  const w = 60,
+    h = 60;
+  el("source").width = w;
+  el("source").height = h;
+  el("flatten").checked = flat;
+  pixels = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      let paper = x < 30 ? 245 : 120,
+        v = x === 10 || x === 11 || x === 45 || x === 46 ? paper * 0.3 : paper;
+      pixels.set([v, v, v, 255], (y * w + x) * 4);
+    }
+  vm.runInContext("trace()", context);
+  const d = vm.runInContext("svg", context).match(/ d="([^"]*)"/)[1];
+  return Math.max(...[...d.matchAll(/(\d+),\d+/g)].map((m) => +m[1]));
+}
+assert.equal(maxX(false), 60, "shadow should be traced as ink without flattening");
+const flat = maxX(true);
+assert(flat >= 46 && flat <= 47, "flattening should keep the line in the shadow and drop the shadow");
+el("flatten").checked = false;
+console.log("Passed solid shape, hole, blank, disconnected shapes, SVG export and shadow flattening checks.");

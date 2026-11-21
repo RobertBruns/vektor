@@ -609,10 +609,12 @@ dialog::backdrop {
 dialog button {
   float: right;
 }
-.vector-only {
+.view-vector,
+.view-original {
   grid-template-columns: 1fr;
 }
-.vector-only .original {
+.view-vector .original,
+.view-original .result {
   display: none;
 }
 .dragging {
@@ -643,11 +645,14 @@ dialog button {
   .panels {
     grid-template-columns: 1fr;
   }
-  .original {
+  .view-split .original {
     display: none;
   }
   .panel + .panel {
     border: 0;
+  }
+  [data-view="split"] {
+    display: none;
   }
   .scale {
     display: none;
@@ -711,5 +716,175 @@ dialog button {
   }
   footer span + span {
     display: none;
+  }
+}
+
+/* Camera, view switch, share and touch sizes */
+.camera-btn,
+.mobile-actions,
+.narrow-only {
+  display: none;
+}
+.upload + .upload {
+  margin-top: 10px;
+}
+.hint {
+  display: block;
+  font-size: 10px;
+  color: #96a096;
+  margin-top: 4px;
+}
+.download-actions {
+  display: flex;
+  gap: 10px;
+}
+#share {
+  background: white;
+  border: 1px solid #c4d899;
+  border-radius: 7px;
+  padding: 14px 18px;
+  color: #354d2c;
+  font-size: 13px;
+  font-weight: 600;
+}
+#download:disabled,
+#share:disabled {
+  opacity: 0.5;
+}
+@media (pointer: coarse) {
+  .camera-btn {
+    display: block;
+  }
+  input[type="range"] {
+    height: 28px;
+    margin: 6px 0 4px;
+  }
+  input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+  }
+  .switch-row {
+    min-height: 36px;
+  }
+}
+@media (max-width: 850px) {
+  .narrow-only {
+    display: inline;
+  }
+  .wide-only {
+    display: none;
+  }
+}
+@media (max-width: 570px) {
+  header {
+    height: auto;
+    padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  }
+  .brand {
+    font-size: 22px;
+  }
+  main {
+    padding: 14px 12px 0;
+  }
+  .intro {
+    margin-bottom: 14px;
+  }
+  .eyebrow,
+  .intro p {
+    display: none;
+  }
+  h1 {
+    font-size: 26px;
+    letter-spacing: -1px;
+    margin: 0;
+  }
+  .mobile-actions {
+    display: flex;
+    gap: 10px;
+    padding: 14px 14px 0;
+  }
+  .mobile-actions button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 6px;
+    border: 1px solid #c4d899;
+    border-radius: 10px;
+    background: #f7faf4;
+    color: #354d2c;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .mobile-actions button span {
+    font-size: 24px;
+  }
+  .mobile-actions .camera-btn {
+    background: #d4e8a6;
+  }
+  aside section:first-of-type .upload {
+    display: none;
+  }
+  .editor-toolbar {
+    height: auto;
+    padding: 12px 14px;
+  }
+  .segmented {
+    width: 100%;
+  }
+  .segmented button {
+    flex: 1;
+    padding: 9px;
+    font-size: 14px;
+  }
+  .panel-label {
+    height: auto;
+    padding: 10px 14px 0;
+  }
+  .art {
+    margin: 6px 14px 10px;
+    min-height: 240px;
+  }
+  .art canvas,
+  .art svg {
+    max-height: 55vh;
+  }
+  .panels {
+    min-height: 0;
+  }
+  .panel-footer {
+    display: none;
+  }
+  .editor-bottom {
+    padding: 10px 14px;
+  }
+  .control label,
+  .color-row,
+  .switch-row {
+    font-size: 14px;
+  }
+  .download-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 16px -12px 0;
+    border-radius: 0;
+    border-width: 1px 0 0;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 14px #243c3014;
+  }
+  .download-bar > div:first-child {
+    display: none;
+  }
+  .download-actions {
+    width: 100%;
+  }
+  .download-actions button {
+    flex: 1;
+    font-size: 15px !important;
+  }
+  footer {
+    padding-bottom: 12px;
   }
 }

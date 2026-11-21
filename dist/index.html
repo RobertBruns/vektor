@@ -2,7 +2,13 @@
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#264534" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="vektor" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-180.png" />
     <title>vektor – Skizze zu SVG</title>
     <meta
       name="description"
@@ -33,9 +39,17 @@
           <div class="aside-title">Einstellungen <button id="reset" class="text-btn">Zurücksetzen</button></div>
           <section>
             <label class="section-label">AUSGANGSBILD</label
+            ><button id="camera" class="upload camera-btn">
+              <span>📷</span> Foto aufnehmen<small>Skizze direkt mit der Kamera</small></button
             ><button id="upload" class="upload">
-              <span>＋</span> Skizze hochladen<small>JPG, PNG, WEBP · bis 20 MB</small></button
-            ><input id="file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+              <span>＋</span> Bild wählen<small>JPG, PNG, WEBP, HEIC · bis 20 MB</small></button
+            ><input id="file" type="file" accept="image/*" hidden /><input
+              id="cameraFile"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              hidden
+            />
             <div class="or">oder <button id="sample" class="text-btn">Beispielskizze ausprobieren</button></div>
           </section>
           <section>
@@ -58,6 +72,8 @@
                 >Alles behalten <span>Aufräumen</span></small
               >
             </div>
+            <label class="switch-row">Schatten ausgleichen <input id="flatten" type="checkbox" /></label>
+            <small class="hint">Für Handyfotos: gleicht ungleichmäßiges Licht und Papierschatten aus.</small>
             <label class="switch-row">Bild invertieren <input id="invert" type="checkbox" /></label>
           </section>
           <section class="export-settings">
@@ -77,14 +93,19 @@
           </div>
         </aside>
         <div class="editor">
+          <div class="mobile-actions">
+            <button type="button" data-pick="cameraFile" class="camera-btn"><span>📷</span>Foto aufnehmen</button
+            ><button type="button" data-pick="file"><span>🖼️</span>Bild wählen</button>
+          </div>
           <div class="editor-toolbar">
             <div class="segmented">
               <button class="active" data-view="split">Nebeneinander</button
-              ><button data-view="vector">Nur Vektor</button>
+              ><button data-view="original" class="narrow-only">Original</button
+              ><button data-view="vector"><span class="wide-only">Nur </span>Vektor</button>
             </div>
             <span class="live">✦ Live-Vorschau</span>
           </div>
-          <div class="panels" id="panels">
+          <div class="panels view-split" id="panels">
             <div class="panel original">
               <div class="panel-label">Original <span id="filename">beispiel-pflanze.png</span></div>
               <div class="art"><canvas id="source"></canvas></div>
@@ -107,7 +128,9 @@
           <strong>Eine kleine Skizze. Ein großer nächster Schritt.</strong
           ><span>Bereit für Laser, Druck, Aufnäher und was immer als Nächstes kommt.</span>
         </div>
-        <button id="download">↓ &nbsp; SVG herunterladen</button>
+        <div class="download-actions">
+          <button id="share" hidden>↗ &nbsp; Teilen</button><button id="download">↓ &nbsp; SVG herunterladen</button>
+        </div>
       </div>
       <footer>
         <span>Für Ideen, die du von Hand machst. <small id="version"></small></span><span>KEIN UPLOAD. KEIN KONTO. EINFACH LOSLEGEN.</span>
@@ -116,9 +139,9 @@
     <dialog id="guide">
       <button id="closeGuide" class="quiet">Schließen ×</button>
       <h2>Von der Skizze zum SVG</h2>
-      <p>1. Lade ein Foto oder einen Scan hoch – auf dem Handy direkt aus der Fotomediathek.</p>
+      <p>1. Fotografiere deine Skizze mit „Foto aufnehmen“ oder wähle ein Bild bzw. einen Scan aus. Tipp: Blatt flach hinlegen, von oben fotografieren, ohne Blitz.</p>
       <p>2. Stell den Schwellenwert so ein, dass deine Linien erfasst werden. Glätte die Kanten und entferne einzelne Flecken.</p>
-      <p>3. Wähle eine Linienfarbe und lade dein SVG herunter.</p>
+      <p>3. Wähle eine Linienfarbe und lade dein SVG herunter – oder teile es auf dem Handy direkt.</p>
       <p>
         Am besten für einfarbige Zeichnungen, Schriftzüge und Silhouetten. Das SVG enthält bearbeitbare
         Vektorpfade und kein eingebettetes Bild. Bilder werden lokal verarbeitet, mit höchstens 900 Pixeln an der

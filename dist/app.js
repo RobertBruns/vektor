@@ -24,18 +24,42 @@ function simplify(p, e) {
   }
   return max > e ? [...simplify(p.slice(0, idx + 1), e).slice(0, -1), ...simplify(p.slice(idx), e)] : [a, b];
 }
+// Divides each pixel by its local background brightness (box mean via an integral image),
+// so shadows and uneven light on photographed paper become white before thresholding.
+function flatten(gray, w, h) {
+  let r = Math.max(8, Math.round(Math.max(w, h) / 16)),
+    W = w + 1,
+    sum = new Float64Array(W * (h + 1));
+  for (let y = 0; y < h; y++)
+    for (let x = 0, row = 0; x < w; x++) {
+      row += gray[y * w + x];
+      sum[(y + 1) * W + x + 1] = sum[y * W + x + 1] + row;
+    }
+  for (let y = 0; y < h; y++) {
+    let y0 = Math.max(0, y - r),
+      y1 = Math.min(h, y + r + 1);
+    for (let x = 0; x < w; x++) {
+      let x0 = Math.max(0, x - r),
+        x1 = Math.min(w, x + r + 1),
+        mean = (sum[y1 * W + x1] - sum[y0 * W + x1] - sum[y1 * W + x0] + sum[y0 * W + x0]) / ((y1 - y0) * (x1 - x0));
+      gray[y * w + x] = Math.min(255, (255 * gray[y * w + x]) / Math.max(mean, 1));
+    }
+  }
+}
 function trace() {
   let w = canvas.width,
     h = canvas.height,
     pixels = ctx.getImageData(0, 0, w, h).data,
     mask = new Uint8Array(w * h),
     threshold = +$("threshold").value,
-    inv = $("invert").checked;
-  for (let i = 0; i < mask.length; i++) {
-    let a = pixels[i * 4 + 3] / 255,
-      g = (0.299 * pixels[i * 4] + 0.587 * pixels[i * 4 + 1] + 0.114 * pixels[i * 4 + 2]) * a + 255 * (1 - a);
-    mask[i] = inv ? g > threshold : g < threshold;
+    inv = $("invert").checked,
+    gray = new Float32Array(w * h);
+  for (let i = 0; i < gray.length; i++) {
+    let a = pixels[i * 4 + 3] / 255;
+    gray[i] = (0.299 * pixels[i * 4] + 0.587 * pixels[i * 4 + 1] + 0.114 * pixels[i * 4 + 2]) * a + 255 * (1 - a);
   }
+  if ($("flatten").checked) flatten(gray, w, h);
+  for (let i = 0; i < mask.length; i++) mask[i] = inv ? gray[i] > threshold : gray[i] < threshold;
   let seen = new Uint8Array(w * h),
     min = +$("speckle").value;
   for (let i = 0; i < mask.length; i++) {
@@ -105,7 +129,7 @@ function render() {
   $("status").textContent = loops.length
     ? "✓ Fertig · bearbeitbare Vektorpfade"
     : "Keine Linien gefunden. Schwellenwert ändern oder Bild invertieren.";
-  $("download").disabled = !loops.length;
+  $("download").disabled = $("share").disabled = !loops.length;
 }
 function update() {
   ["threshold", "smooth", "speckle"].forEach((id) => ($(id + "Value").value = $(id).value));
@@ -113,7 +137,7 @@ function update() {
   clearTimeout(timer);
   timer = setTimeout(trace, 100);
 }
-["threshold", "smooth", "speckle", "invert"].forEach((id) => $(id).addEventListener("input", update));
+["threshold", "smooth", "speckle", "invert", "flatten"].forEach((id) => $(id).addEventListener("input", update));
 ["ink", "transparent"].forEach((id) => $(id).addEventListener("input", render));
 function sample() {
   canvas.width = 660;
@@ -157,12 +181,13 @@ function sample() {
   name = "beispiel-pflanze";
   update();
 }
-async function load(file) {
+async function load(file, fromCamera) {
   if (!file) return;
-  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024) {
-    $("status").textContent = "Bitte ein PNG-, JPG- oder WebP-Bild unter 20 MB wählen.";
+  if ((file.type && !file.type.startsWith("image/")) || file.size > 20 * 1024 * 1024) {
+    $("status").textContent = "Bitte ein Bild (JPG, PNG, WebP, HEIC) unter 20 MB wählen.";
     return;
   }
+  $("status").textContent = "Bild wird geladen…";
   let url = URL.createObjectURL(file),
     img = new Image();
   img.onload = () => {
@@ -172,8 +197,13 @@ async function load(file) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     URL.revokeObjectURL(url);
-    name = file.name.replace(/\.[^.]+$/, "");
-    $("filename").textContent = file.name;
+    if (fromCamera) {
+      let d = new Date(),
+        pad = (n) => String(n).padStart(2, "0");
+      name = `skizze-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+      $("flatten").checked = true;
+    } else name = file.name.replace(/\.[^.]+$/, "");
+    $("filename").textContent = fromCamera ? "Kamerafoto" : file.name;
     update();
   };
   img.onerror = () => {
@@ -183,7 +213,16 @@ async function load(file) {
   img.src = url;
 }
 $("upload").onclick = () => $("file").click();
-$("file").onchange = (e) => load(e.target.files[0]);
+$("camera").onclick = () => $("cameraFile").click();
+document.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => $(b.dataset.pick).click()));
+$("file").onchange = (e) => {
+  load(e.target.files[0]);
+  e.target.value = "";
+};
+$("cameraFile").onchange = (e) => {
+  load(e.target.files[0], true);
+  e.target.value = "";
+};
 $("sample").onclick = sample;
 document.addEventListener("dragover", (e) => {
   e.preventDefault();
@@ -197,18 +236,21 @@ document.addEventListener("drop", (e) => {
   document.querySelector(".workspace").classList.remove("dragging");
   load(e.dataTransfer.files[0]);
 });
-document.querySelectorAll("[data-view]").forEach(
-  (b) =>
-    (b.onclick = () => {
-      document.querySelectorAll("[data-view]").forEach((c) => c.classList.toggle("active", b === c));
-      $("panels").classList.toggle("vector-only", b.dataset.view === "vector");
-    }),
-);
+function setView(view) {
+  document.querySelectorAll("[data-view]").forEach((c) => c.classList.toggle("active", c.dataset.view === view));
+  $("panels").className = "panels view-" + view;
+}
+document.querySelectorAll("[data-view]").forEach((b) => (b.onclick = () => setView(b.dataset.view)));
+// Narrow screens have room for one panel only; split view falls back to the vector
+let narrow = matchMedia("(max-width: 850px)");
+if (narrow.matches) setView("vector");
+narrow.addEventListener?.("change", (e) => setView(e.matches ? "vector" : "split"));
 $("reset").onclick = () => {
   $("threshold").value = 160;
   $("smooth").value = 1.2;
   $("speckle").value = 8;
   $("invert").checked = false;
+  $("flatten").checked = false;
   $("ink").value = "#263d35";
   $("transparent").checked = true;
   update();
@@ -222,6 +264,13 @@ $("download").onclick = () => {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+function svgFile() {
+  return new File([svg], name + ".svg", { type: "image/svg+xml" });
+}
+if (navigator.canShare && navigator.canShare({ files: [new File([""], "x.svg", { type: "image/svg+xml" })] })) {
+  $("share").hidden = false;
+  $("share").onclick = () => navigator.share({ files: [svgFile()], title: name + ".svg" }).catch(() => {});
+}
 $("help").onclick = () => $("guide").showModal();
 $("closeGuide").onclick = () => $("guide").close();
 fetch("version.txt", { cache: "no-cache" })

@@ -10,3 +10,5 @@ Require valid-user
     Header always set Cache-Control "no-cache"
   </FilesMatch>
 </IfModule>
+
+AddType application/manifest+json .webmanifest
