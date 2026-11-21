@@ -1,6 +1,6 @@
-# Inktrace
+# vektor
 
-Browser-local sketch-to-SVG app. Upload JPG, PNG, or WebP; tune threshold, edge simplification, and speckle removal; change ink color; export editable SVG paths.
+Browser-local sketch-to-SVG app (German UI; based on the Inktrace handoff). Upload JPG, PNG, or WebP; tune threshold, edge simplification, and speckle removal; change ink color; export editable SVG paths.
 
 ## Run locally
 
@@ -18,7 +18,7 @@ Open http://localhost:8000. You can also open `dist/index.html` directly.
 - `dist/style.css`: responsive styling
 - `dist/app.js`: image loading, sample drawing, tracing, controls, SVG download
 
-Deploy the contents of `dist/` to any static host. No server-side processing or storage is used. Google Fonts is an optional external typography request; sketches are processed locally.
+Deploy the contents of `dist/` to any static host; see DEPLOYMENT.md for the live setup. No server-side processing or storage is used. Fonts (DM Sans, Manrope, OFL) are self-hosted in `dist/fonts/`, so the app makes no external requests.
 
 ## Current behavior and limits
 
@@ -35,7 +35,5 @@ Deploy the contents of `dist/` to any static host. No server-side processing or 
 `node --check dist/app.js` passed. Synthetic checks covered solid shapes, holes, blank images, disconnected shapes, and SVG output. A reusable version is included at `tests/trace.cjs`; run `node tests/trace.cjs`.
 
 Visual browser QA was not completed: the original environment blocked the preview server's port. Check desktop and mobile layouts, file upload, drag-and-drop, all controls, and SVG download in a real browser before making further release claims.
-
-Original private deployment: https://inktrace-sketch-studio.robert-bruns.chatgpt.site
 
 The handoff intentionally excludes Git history, credentials, and the original hosting identity. It is portable source, not a connection to the existing deployment.

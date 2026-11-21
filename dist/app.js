@@ -2,7 +2,7 @@ const $ = (id) => document.getElementById(id),
   canvas = $("source"),
   ctx = canvas.getContext("2d", { willReadFrequently: true });
 let svg = "",
-  name = "botanical-sketch",
+  name = "beispiel-pflanze",
   timer,
   loops = [];
 function simplify(p, e) {
@@ -101,15 +101,15 @@ function render() {
   let bg = $("transparent").checked ? "" : `<rect width="100%" height="100%" fill="white"/>`;
   svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${canvas.width} ${canvas.height}" width="${canvas.width}" height="${canvas.height}">${bg}<path fill="${$("ink").value}" fill-rule="evenodd" d="${paths}"/></svg>`;
   $("vector").innerHTML = svg;
-  $("pathCount").textContent = loops.length + " contours";
+  $("pathCount").textContent = loops.length + " Konturen";
   $("status").textContent = loops.length
-    ? "✓ Trace ready · transparent vector paths"
-    : "No lines found. Adjust threshold or invert the image.";
+    ? "✓ Fertig · bearbeitbare Vektorpfade"
+    : "Keine Linien gefunden. Schwellenwert ändern oder Bild invertieren.";
   $("download").disabled = !loops.length;
 }
 function update() {
   ["threshold", "smooth", "speckle"].forEach((id) => ($(id + "Value").value = $(id).value));
-  $("status").textContent = "Tracing your sketch…";
+  $("status").textContent = "Skizze wird vektorisiert…";
   clearTimeout(timer);
   timer = setTimeout(trace, 100);
 }
@@ -153,14 +153,14 @@ function sample() {
     ctx.fillRect(x, y, 1, 1);
   }
   ctx.globalAlpha = 1;
-  $("filename").textContent = "sample-botanicals.png";
-  name = "botanical-sketch";
+  $("filename").textContent = "beispiel-pflanze.png";
+  name = "beispiel-pflanze";
   update();
 }
 async function load(file) {
   if (!file) return;
   if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024) {
-    $("status").textContent = "Choose a PNG, JPG or WebP image under 20 MB.";
+    $("status").textContent = "Bitte ein PNG-, JPG- oder WebP-Bild unter 20 MB wählen.";
     return;
   }
   let url = URL.createObjectURL(file),
@@ -178,7 +178,7 @@ async function load(file) {
   };
   img.onerror = () => {
     URL.revokeObjectURL(url);
-    $("status").textContent = "This image could not be read. Try another file.";
+    $("status").textContent = "Dieses Bild konnte nicht gelesen werden. Versuch eine andere Datei.";
   };
   img.src = url;
 }
