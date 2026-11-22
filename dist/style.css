@@ -888,3 +888,55 @@ dialog button {
     padding-bottom: 12px;
   }
 }
+
+/* Press-and-hold compare: the original panel takes the vector's place while held */
+.peek-hint {
+  display: none;
+  font-size: 11px;
+  color: #8b9d7e;
+}
+.editor-toolbar:has(+ .view-vector) .peek-hint {
+  display: inline;
+}
+#vector {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.view-vector.peek .original {
+  display: flex;
+}
+.view-vector.peek .result {
+  display: none;
+}
+
+/* Touch targets of at least 44 px */
+@media (pointer: coarse) {
+  .segmented button,
+  .text-btn,
+  .quiet {
+    min-height: 44px;
+  }
+  .text-btn {
+    padding: 0 6px;
+  }
+  .switch-row,
+  .color-row {
+    min-height: 44px;
+  }
+  input[type="range"] {
+    height: 44px;
+    margin: 0;
+  }
+  .color-row input {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+@media (max-width: 570px) {
+  .editor-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}

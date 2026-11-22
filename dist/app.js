@@ -46,11 +46,9 @@ function flatten(gray, w, h) {
     }
   }
 }
-function trace() {
-  let w = canvas.width,
-    h = canvas.height,
-    pixels = ctx.getImageData(0, 0, w, h).data,
-    mask = new Uint8Array(w * h),
+// Ink mask from RGBA pixels with the current threshold, invert and shadow settings
+function toMask(pixels, w, h) {
+  let mask = new Uint8Array(w * h),
     threshold = +$("threshold").value,
     inv = $("invert").checked,
     gray = new Float32Array(w * h);
@@ -60,6 +58,12 @@ function trace() {
   }
   if ($("flatten").checked) flatten(gray, w, h);
   for (let i = 0; i < mask.length; i++) mask[i] = inv ? gray[i] > threshold : gray[i] < threshold;
+  return mask;
+}
+function trace() {
+  let w = canvas.width,
+    h = canvas.height,
+    mask = toMask(ctx.getImageData(0, 0, w, h).data, w, h);
   let seen = new Uint8Array(w * h),
     min = +$("speckle").value;
   for (let i = 0; i < mask.length; i++) {
@@ -241,6 +245,21 @@ function setView(view) {
   $("panels").className = "panels view-" + view;
 }
 document.querySelectorAll("[data-view]").forEach((b) => (b.onclick = () => setView(b.dataset.view)));
+// Press and hold the vector to see the original in its place (compare without switching views)
+let held = null;
+$("vector").addEventListener("pointerdown", (e) => {
+  if (!$("panels").classList.contains("view-vector")) return;
+  held = e.pointerId;
+  $("vector").setPointerCapture(e.pointerId);
+  $("panels").classList.add("peek");
+});
+const release = (e) => {
+  if (e.pointerId !== held) return;
+  held = null;
+  $("panels").classList.remove("peek");
+};
+["pointerup", "pointercancel"].forEach((t) => $("vector").addEventListener(t, release));
+$("vector").addEventListener("contextmenu", (e) => e.preventDefault());
 // Narrow screens have room for one panel only; split view falls back to the vector
 let narrow = matchMedia("(max-width: 850px)");
 if (narrow.matches) setView("vector");
