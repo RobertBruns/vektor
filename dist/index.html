@@ -136,6 +136,19 @@
         <span>Für Ideen, die du von Hand machst. <small id="version"></small></span><span>KEIN UPLOAD. KEIN KONTO. EINFACH LOSLEGEN.</span>
       </footer>
     </main>
+    <div id="live" class="live-cam" hidden>
+      <canvas id="liveView"></canvas>
+      <video id="liveVideo" playsinline muted hidden></video>
+      <div class="live-top">
+        <button id="liveClose" aria-label="Kamera schließen">×</button
+        ><button id="liveRaw" aria-pressed="false">Echtbild</button>
+      </div>
+      <div class="live-bottom">
+        <label for="liveThreshold">Schwellenwert <output id="liveThresholdValue">160</output></label
+        ><input id="liveThreshold" type="range" min="20" max="240" value="160" />
+        <button id="liveShot" aria-label="Foto übernehmen"></button>
+      </div>
+    </div>
     <dialog id="guide">
       <button id="closeGuide" class="quiet">Schließen ×</button>
       <h2>Von der Skizze zum SVG</h2>

@@ -217,8 +217,95 @@ async function load(file, fromCamera) {
   img.src = url;
 }
 $("upload").onclick = () => $("file").click();
-$("camera").onclick = () => $("cameraFile").click();
-document.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => $(b.dataset.pick).click()));
+$("camera").onclick = () => openLive();
+document.querySelectorAll("[data-pick]").forEach(
+  (b) => (b.onclick = () => (b.dataset.pick === "cameraFile" ? openLive() : $(b.dataset.pick).click())),
+);
+// Live camera: shows the two-tone result (ink on paper) while you aim; the shutter takes the full frame.
+// Falls back to the system camera picker when getUserMedia is unavailable or refused.
+let stream = null,
+  liveRaf = 0;
+async function openLive() {
+  if (!navigator.mediaDevices?.getUserMedia) return $("cameraFile").click();
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false,
+    });
+  } catch {
+    return $("cameraFile").click();
+  }
+  let v = $("liveVideo");
+  v.srcObject = stream;
+  await v.play().catch(() => {});
+  $("flatten").checked = true; // phone photos of paper need it, and the preview should match the result
+  $("liveThreshold").value = $("threshold").value;
+  $("liveThresholdValue").value = $("threshold").value;
+  $("live").hidden = false;
+  document.body.style.overflow = "hidden";
+  liveRaf = requestAnimationFrame(liveFrame);
+}
+function closeLive() {
+  cancelAnimationFrame(liveRaf);
+  stream?.getTracks().forEach((t) => t.stop());
+  stream = null;
+  $("live").hidden = true;
+  document.body.style.overflow = "";
+}
+function liveFrame() {
+  let v = $("liveVideo"),
+    view = $("liveView");
+  if (v.videoWidth) {
+    let k = Math.min(1, 480 / Math.max(v.videoWidth, v.videoHeight)),
+      w = Math.round(v.videoWidth * k),
+      h = Math.round(v.videoHeight * k);
+    if (view.width !== w || view.height !== h) {
+      view.width = w;
+      view.height = h;
+    }
+    let c = view.getContext("2d", { willReadFrequently: true });
+    c.drawImage(v, 0, 0, w, h);
+    if ($("liveRaw").getAttribute("aria-pressed") !== "true") {
+      let img = c.getImageData(0, 0, w, h),
+        mask = toMask(img.data, w, h),
+        ink = $("ink").value,
+        r = parseInt(ink.slice(1, 3), 16),
+        g = parseInt(ink.slice(3, 5), 16),
+        b = parseInt(ink.slice(5, 7), 16),
+        d = img.data;
+      for (let i = 0; i < mask.length; i++) {
+        let on = mask[i];
+        d[i * 4] = on ? r : 255;
+        d[i * 4 + 1] = on ? g : 255;
+        d[i * 4 + 2] = on ? b : 255;
+        d[i * 4 + 3] = 255;
+      }
+      c.putImageData(img, 0, 0);
+    }
+  }
+  liveRaf = requestAnimationFrame(liveFrame);
+}
+$("liveThreshold").addEventListener("input", () => {
+  $("threshold").value = $("liveThreshold").value;
+  $("liveThresholdValue").value = $("liveThreshold").value;
+});
+$("liveRaw").onclick = () =>
+  $("liveRaw").setAttribute("aria-pressed", $("liveRaw").getAttribute("aria-pressed") === "true" ? "false" : "true");
+$("liveClose").onclick = closeLive;
+$("liveShot").onclick = () => {
+  let v = $("liveVideo");
+  if (!v.videoWidth) return;
+  let scale = Math.min(1, 900 / Math.max(v.videoWidth, v.videoHeight)),
+    d = new Date(),
+    pad = (n) => String(n).padStart(2, "0");
+  canvas.width = Math.round(v.videoWidth * scale);
+  canvas.height = Math.round(v.videoHeight * scale);
+  ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+  closeLive();
+  name = `skizze-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  $("filename").textContent = "Kamerafoto";
+  update();
+};
 $("file").onchange = (e) => {
   load(e.target.files[0]);
   e.target.value = "";

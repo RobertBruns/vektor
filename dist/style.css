@@ -940,3 +940,81 @@ dialog button {
     gap: 6px;
   }
 }
+
+/* Live camera with two-tone preview */
+.live-cam {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.live-cam[hidden] {
+  display: none;
+}
+#liveView {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.live-top,
+.live-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 12px calc(16px + env(safe-area-inset-right)) 12px calc(16px + env(safe-area-inset-left));
+}
+.live-top {
+  top: 0;
+  justify-content: space-between;
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+.live-top button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 22px;
+  background: #000a;
+  color: white;
+  font-size: 15px;
+}
+#liveClose {
+  font-size: 26px;
+  padding: 0;
+}
+#liveRaw[aria-pressed="true"] {
+  background: #d4e8a6;
+  color: #23372e;
+}
+.live-bottom {
+  bottom: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, #000c);
+  color: white;
+}
+.live-bottom label {
+  font-size: 14px;
+}
+.live-bottom output {
+  margin-left: 6px;
+  font-weight: 600;
+}
+.live-bottom input[type="range"] {
+  width: min(100%, 420px);
+  height: 44px;
+  margin: 0;
+}
+#liveShot {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 5px solid white;
+  background: #d4e8a6;
+}
