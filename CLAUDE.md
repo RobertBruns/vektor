@@ -10,5 +10,5 @@ Likely improvements if requested: Bezier curve fitting or a mature tracing engin
 
 The existing files are compact and contain long lines. Formatting them for readability is reasonable. No secrets or environment variables are needed. No hosting project identity is included; do not assume publishing access to the original site.
 
-Branches: work and push on `dev` (a push there deploys nothing new). Going live = release `dev` → `main`; every push to `main` deploys to vektor.dpsg-marcelcallo.de (see DEPLOYMENT.md). Agent files never go to `main` (a pre-push hook blocks it). Release:
-`git checkout main && git merge --no-ff --no-commit dev; git rm -r --ignore-unmatch -q AGENTS.md AGENT.md CLAUDE.md CLAUDE.local.md .claude && git commit --no-edit && git push && git checkout dev`
+Branches: work and push on `dev` (a push there deploys nothing new). Going live = release `dev` → `main`; every push to `main` deploys to vektor.dpsg-marcelcallo.de (see DEPLOYMENT.md). Release:
+`git checkout main && git merge --no-ff dev && git push && git checkout dev`
